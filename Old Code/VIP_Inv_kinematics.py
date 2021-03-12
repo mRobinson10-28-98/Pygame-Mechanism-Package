@@ -294,7 +294,7 @@ class Key(Clock):
             if keys[self.keyCode] and self.passed() >= self.debounceTime:
                 return True
         else:
-            if mouse_pos[self.keyCode] and self.passed() >= self.debounceTime:
+            if mouse_press[self.keyCode] and self.passed() >= self.debounceTime:
                 return True
 
 
@@ -355,6 +355,7 @@ mouse_right_click = 0
 left_click = Key(0, isKeyboard=False)
 right_click = Key(2, isKeyboard=False)
 k_click = Key(py.K_k)
+k_click.debounceTime = 10
 z_click = Key(py.K_z)
 r_click = Key(py.K_r)
 l_click = Key(py.K_l)
@@ -399,7 +400,7 @@ while run:
     mouse_press = py.mouse.get_pressed()
     mouse_left_click = mouse_press[0]
     mouse_right_click = mouse_press[2]
-
+    print()
     mouse.x = mouse_pos[0]
     mouse.y = mouse_pos[1]
 
