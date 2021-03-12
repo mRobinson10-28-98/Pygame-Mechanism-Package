@@ -2,6 +2,13 @@ import pygame as py
 import math as m
 import csv
 
+import Variables as v
+from Basic_Functions import pixels_to_inches
+from Basic_Functions import inches_to_pixels
+from Point import Point
+from Linkage import Linkage
+
+
 
 fileWriteName = '/home/pi/Documents/Motor Control/Normal Walking Gait/03032021.csv'
 fileReadName = '/home/pi/Documents/Motor Control/Normal Walking Gait/03032021.csv'
@@ -9,90 +16,38 @@ fileReadName = '/home/pi/Documents/Motor Control/Normal Walking Gait/03032021.cs
 # Initiated pygame
 py.init()
  
-# Time delay sets delay in each loop in millis
-time_delay = 100
- 
-# Sets screen width and height in pixels
-screen_dimension = 800
- 
-# Screen width and height in inches for math
-screen_dimension_inches = 24
- 
 # Defines window
-win = py.display.set_mode((screen_dimension, screen_dimension))
+win = py.display.set_mode((v.screen_dimension, v.screen_dimension))
  
 # Title
 py.display.set_caption('Inverse Kinematics')
  
-# Screen multiplier
-multiplier = 2
- 
-# Link Lengths in inches (Thigh, crank, coupler, follower, calf, hip)
-linkLength1 = 4.5
-linkLength2 = 1.5
-linkLength3 = 4.5
-linkLength4 = 1.5
-linkLength5 = 6.5 - linkLength4
-linkLengthhip = 2
- 
-linkLength1 *= multiplier
-linkLength2 *= multiplier
-linkLength3 *= multiplier
-linkLength4 *= multiplier
-linkLength5 *= multiplier
-linkLengthhip *= multiplier
- 
-# Mechanism origin in screen (for visuals only)
-origin_x = screen_dimension_inches / 2
-origin_y = screen_dimension_inches / 4
- 
-# Colors
-red = (255, 10, 92)
-orange = (255, 95, 10)
-yellow = (255, 180, 0)
-green = (25, 100, 25)
-blue = (0, 200, 250)
-purple = (100, 10, 100)
-gray = (50, 50, 50)
-white = (255, 255, 255)
-black = (10, 10, 10)
- 
-# Converts length from pixels to inches (usually for kinematic analysis)
-def pixels_to_inches(pixels):
-    return (pixels * screen_dimension_inches) / screen_dimension
- 
-# Converts length from inches to pixels (usually for display purposes)
-def inches_to_pixels(inches):
-    return (inches * screen_dimension) / screen_dimension_inches
- 
 # Created grid for reference
- 
- 
 def draw_screen():
-    py.draw.line(win, gray, (inches_to_pixels(origin_x-screen_dimension_inches/2), inches_to_pixels(origin_y)),
-                 (inches_to_pixels(origin_x+screen_dimension_inches/2), inches_to_pixels(origin_y)))
-    py.draw.line(win, gray, (inches_to_pixels(origin_x), inches_to_pixels(origin_y-screen_dimension_inches/2)),
-                 (inches_to_pixels(origin_x), inches_to_pixels(origin_y+screen_dimension_inches)))
+    py.draw.line(win, v.gray, (inches_to_pixels(v.origin_x-v.screen_dimension_inches/2), inches_to_pixels(v.origin_y)),
+                 (inches_to_pixels(v.origin_x+v.screen_dimension_inches/2), inches_to_pixels(v.origin_y)))
+    py.draw.line(win, v.gray, (inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y-v.screen_dimension_inches/2)),
+                 (inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y+v.screen_dimension_inches)))
     axisFont = py.font.Font('freesansbold.ttf', 20)
  
     if xyScreen:
-        win.blit(axisFont.render("X", True, black),
-                 (screen_dimension - 20, inches_to_pixels(origin_y)))
-        win.blit(axisFont.render("Y", True, black),
-                 (inches_to_pixels(origin_x), screen_dimension - 20))
+        win.blit(axisFont.render("X", True, v.black),
+                 (v.screen_dimension - 20, inches_to_pixels(v.origin_y)))
+        win.blit(axisFont.render("Y", True, v.black),
+                 (inches_to_pixels(v.origin_x), v.screen_dimension - 20))
  
     else:
-        win.blit(axisFont.render("Z", True, black),
-                 (screen_dimension - 20, inches_to_pixels(origin_y)))
-        win.blit(axisFont.render("Y", True, black),
-                 (inches_to_pixels(origin_x), screen_dimension - 20))
+        win.blit(axisFont.render("Z", True, v.black),
+                 (v.screen_dimension - 20, inches_to_pixels(v.origin_y)))
+        win.blit(axisFont.render("Y", True, v.black),
+                 (inches_to_pixels(v.origin_x), v.screen_dimension - 20))
         
     for linkage in linkages:
-        linkage.render()
+        linkage.render(win, xyScreen)
     for button in buttons:
         button.render()
     for point in points:
-        point.render()
+        point.render(win, xyScreen)
         
     leg1.render()
     py.display.update()
@@ -100,45 +55,25 @@ def draw_screen():
         
 def create_leg1():
     linkage1 = Linkage(leg1.l1, leg1.origin_x,
-                   leg1.origin_y, (m.pi/2)-leg1.theta1, red, leg1)
+                   leg1.origin_y, (m.pi/2)-leg1.theta1, v.red, linkages)
     linkage2 = Linkage(leg1.l2, leg1.origin_x,
-                   leg1.origin_y, (m.pi/2)-leg1.theta2, orange, leg1)
+                   leg1.origin_y, (m.pi/2)-leg1.theta2, v.orange, linkages)
     linkage3 = Linkage(leg1.l3, leg1.joint2_x,
-                   leg1.joint2_y, (m.pi/2)-leg1.theta3, yellow, leg1)
+                   leg1.joint2_y, (m.pi/2)-leg1.theta3, v.yellow, linkages)
     linkage4 = Linkage(leg1.l4 + leg1.l5, leg1.joint3_x,
-                   leg1.joint3_y, (m.pi/2)-leg1.theta4, blue, leg1)
+                   leg1.joint3_y, (m.pi/2)-leg1.theta4, v.blue, linkages)
     linkage_hipz = Linkage(leg1.lhipz, leg1.origin_x,
-                       leg1.origin_y, -leg1.thetahip, blue, leg1, xy=False)
+                       leg1.origin_y, -leg1.thetahip, v.blue, linkages, xy=False)
     linkage_hipy = Linkage(leg1.lhipy, leg1.jointhip_z,
-                       leg1.jointhip_y, -leg1.thetahip + m.pi/2, blue, leg1, xy=False)
+                       leg1.jointhip_y, -leg1.thetahip + m.pi/2, v.blue, linkages, xy=False)
     
 def initialize_screen():
-    py.time.delay(time_delay)
+    py.time.delay(v.time_delay)
     win.fill((255, 255, 255))
  
     for event in py.event.get():
         if event.type == py.QUIT:
             run = False
-            
-
-# Point class defines the position of a point for inverse kinematics
-class Point:
-    def __init__(self, x, y, z):
-        self.x = int(x)
-        self.y = int(y)
-        self.z = int(z)
-        self.color = red
-        self.radius = 3
-        self.x_inches = pixels_to_inches(self.x) - origin_x
-        self.y_inches = pixels_to_inches(self.y) - origin_y
-        self.z_inches = pixels_to_inches(self.z) - origin_x
-        points.append(self)
- 
-    def render(self):
-        if xyScreen:
-            py.draw.circle(win, self.color, (self.x, self.y), self.radius)
-        else:
-            py.draw.circle(win, self.color, (self.z, self.y), self.radius)
  
 # x,y are coordinate points that are determined by clicking mouse
 # x,y coordinates are converted to inches in Point class before defined in Leg class
@@ -148,8 +83,8 @@ class Point:
  
 class Leg:
     def __init__(self, l1, l2, l3, l4, l5, lhipz):
-        self.origin_x = origin_x
-        self.origin_y = origin_y
+        self.origin_x = v.origin_x
+        self.origin_y = v.origin_y
         self.l1 = l1
         self.l2 = l2
         self.l3 = l3
@@ -260,18 +195,18 @@ class Leg:
  
     def render(self):
         if xyScreen:
-            py.draw.circle(win, black, (int(inches_to_pixels(self.joint2_x)), int(
+            py.draw.circle(win, v.black, (int(inches_to_pixels(self.joint2_x)), int(
                 inches_to_pixels(self.joint2_y))), 8)
-            py.draw.circle(win, black, (int(inches_to_pixels(self.joint3_x)), int(
+            py.draw.circle(win, v.black, (int(inches_to_pixels(self.joint3_x)), int(
                 inches_to_pixels(self.joint3_y))), 8)
-            py.draw.circle(win, black, (int(inches_to_pixels(self.joint4_x)), int(
+            py.draw.circle(win, v.black, (int(inches_to_pixels(self.joint4_x)), int(
                 inches_to_pixels(self.joint4_y))), 8)
-            py.draw.circle(win, purple, (int(inches_to_pixels(self.origin_x)), int(
+            py.draw.circle(win, v.purple, (int(inches_to_pixels(self.origin_x)), int(
                 inches_to_pixels(self.origin_y))), 10)
         else:
-            py.draw.circle(win, black, (int(inches_to_pixels(self.jointhip_z)), int(
+            py.draw.circle(win, v.black, (int(inches_to_pixels(self.jointhip_z)), int(
                 inches_to_pixels(self.jointhip_y))), 8)
-            py.draw.circle(win, purple, (int(inches_to_pixels(self.origin_x)), int(
+            py.draw.circle(win, v.purple, (int(inches_to_pixels(self.origin_x)), int(
                 inches_to_pixels(self.origin_y))), 10)
  
     def print_system(self):
@@ -294,7 +229,7 @@ class Leg:
         thCsv = self.thetahip
         print([str(m.degrees(t1Csv)), str(m.degrees(t2Csv)), str(m.degrees(thCsv))])
         self.csvThetas.append([str(m.degrees(t1Csv)), str(m.degrees(t2Csv)), str(m.degrees(thCsv)),
-                               str(inches_to_pixels(self.x + origin_x)), str(inches_to_pixels(self.y + origin_y)), str(inches_to_pixels(self.z + origin_x))])
+                               str(inches_to_pixels(self.x + v.origin_x)), str(inches_to_pixels(self.y + v.origin_y)), str(inches_to_pixels(self.z + v.origin_x))])
         
     def write_csv(self):
         print(' -   -   -   -   -   -   -   -   -   -   -   -  ')
@@ -319,26 +254,6 @@ class Leg:
             draw_screen()
             
         self.write_csv()
-         
- 
-# All Linkage parameters input in iches, then converted in __init__ to pixels
-class Linkage:
-    def __init__(self, length, x1, y1, theta, color, leg, xy=True):
-        self.x1 = inches_to_pixels(x1)
-        self.y1 = inches_to_pixels(y1)
-        self.length = inches_to_pixels(length)
-        self.theta = theta
-        self.x2 = self.x1 + self.length * m.cos((self.theta))
-        self.y2 = self.y1 + self.length * m.sin((self.theta))
-        self.color = color
-        self.xyPlane = True
-        self.xy = xy
-        linkages.append(self)
- 
-    def render(self):
-        if self.xy == xyScreen:
-            py.draw.line(win, self.color, (self.x1, self.y1),
-                         (self.x2, self.y2), 12)
  
  
 class Clock:
@@ -375,13 +290,13 @@ class Button:
         self.height = height
         self.fontSize = int(2 * self.height / 3)
         self.width = 2*(len(self.name) * self.fontSize)/3
-        self.x = screen_dimension - self.width - 10
-        self.color = red
+        self.x = v.screen_dimension - self.width - 10
+        self.color = v.red
         self.buttonFont = py.font.Font('freesansbold.ttf', self.fontSize)
         buttons.append(self)
  
     def render(self):
-        py.draw.rect(win, black, (self.x, self.y, self.width, self.height))
+        py.draw.rect(win, v.black, (self.x, self.y, self.width, self.height))
         win.blit(self.buttonFont.render(self.name, True, self.color),
                  (self.x + self.fontSize/2, self.y + self.fontSize/3))
  
@@ -422,8 +337,8 @@ mouse_press = py.mouse.get_pressed()
 mouse_left_click = 0
 mouse_right_click = 0
  
-leg1 = Leg(linkLength1, linkLength2, linkLength3,
-           linkLength4, linkLength5, linkLengthhip)
+leg1 = Leg(v.linkLength1, v.linkLength2, v.linkLength3,
+           v.linkLength4, v.linkLength5, v.linkLengthhip)
  
 mouse = Mouse(0, 0)
 
@@ -431,6 +346,7 @@ mouse = Mouse(0, 0)
 left_click = Key(mouse_left_click, 250)
 right_click = Key(mouse_right_click)
 k_click = Key(keys[py.K_k])
+k_click.debounceTime = 10
 z_click = Key(keys[py.K_z])
 r_click = Key(keys[py.K_r])
 l_click = Key(keys[py.K_l])
@@ -447,18 +363,18 @@ editModeBoolean = False
  
 flipScreen = Button(10, 25, "FLIP SCREEN")
 planarPath = Button(50, 25, "Keep Path Planar")
-planarPath.color = green
+planarPath.color = v.green
 editMode = Button(90, 25, 'Edit Mode')
  
 point_index = 0
-Point(inches_to_pixels(origin_x - 4),
-                    screen_dimension - inches_to_pixels(origin_y + 4), inches_to_pixels(origin_x - 4))
+Point(inches_to_pixels(v.origin_x - 4),
+                    v.screen_dimension - inches_to_pixels(v.origin_y + 4), inches_to_pixels(v.origin_x - 4), points)
  
 run = True
 test = False
 while run:
     initialize_screen()
-    
+    print(py.time.get_ticks())
     # List of Links
     linkages = []
  
@@ -508,7 +424,7 @@ while run:
                         
                     else:
                         if planarPathBoolean:
-                            points.insert(indexClosest, Point(mouse.x, mouse.y, inches_to_pixels(origin_x + leg1.lhipz)))
+                            points.insert(indexClosest, Point(mouse.x, mouse.y, inches_to_pixels(v.origin_x + leg1.lhipz)))
                             mouse.holdingItem = False
                             left_click.refresh()
                         else:
@@ -529,18 +445,18 @@ while run:
                 if xyScreen and not buttonBool:
                     if not planarPathBoolean:
                         mouse.holdingPoint = True
-                        mouse.point = Point(mouse.x, mouse.y, mouse.x)
+                        mouse.point = Point(mouse.x, mouse.y, mouse.x, points)
                         x = mouse.x
                         y = mouse.y
                         previousPointIndex = point_index
                         xyScreen = False
                     else:
-                        Point(mouse.x, mouse.y, inches_to_pixels(origin_x + leg1.lhipz))
+                        Point(mouse.x, mouse.y, inches_to_pixels(v.origin_x + leg1.lhipz), points)
                 
                 # If you've already clicked a point in the xy plane and are not in yx plane, create a point
                 elif not xyScreen and mouse.holdingPoint:
                     points.pop(-1)
-                    Point(x, y, mouse.x)
+                    Point(x, y, mouse.x, points)
                     mouse.holdingPoint = False
                     mouse.point = 0
                     point_index = previousPointIndex
@@ -548,7 +464,7 @@ while run:
  
     if mouse.holdingPoint and not editModeBoolean:
         mouse.point.z = mouse.x
-        mouse.point.z_inches = pixels_to_inches(mouse.point.z) - origin_x
+        mouse.point.z_inches = pixels_to_inches(mouse.point.z) - v.origin_x
         point_index = points.index(mouse.point)
         mouse.render()
  
@@ -558,7 +474,7 @@ while run:
             points = []
             point_index = 0
             mouse.holdingPoint = True
-            mouse.point = Point(mouse.x, mouse.y, mouse.x)
+            mouse.point = Point(mouse.x, mouse.y, mouse.x, points)
             x = mouse.x
             y = mouse.y
             previousPointIndex = point_index
@@ -567,14 +483,13 @@ while run:
         else:
             points = []
             point_index = 0
-            Point(mouse.x, mouse.y, inches_to_pixels(origin_x + leg1.lhipz))
+            Point(mouse.x, mouse.y, inches_to_pixels(v.origin_x + leg1.lhipz), points)
             k_click.refresh()
  
     # If "z" is pressed, delete previous point, and add it to deleted points list
     if z_click.clicked():
         points.pop(-1)
-        deleted_points.append(Point(points[-1].x, points[-1].y, points[-1].z))
-        points.pop(-1)
+        Point(points[-1].x, points[-1].y, points[-1].z, deleted_points)
         z_click.refresh()
  
     # If "r" is pressed, redraw point most previously deleted (redo)
@@ -615,7 +530,7 @@ while run:
             with open(fileReadName, 'r') as csv_read_file:
                 csv_reader = csv.reader(csv_read_file)
                 for line in csv_reader:
-                    points.append(Point(int(float(line[3])), int(float(line[4])), int(float(line[5]))))
+                    points.append(Point(int(float(line[3])), int(float(line[4])), int(float(line[5])), points))
                 
             shift_click.refresh()
         space_click.refresh()
@@ -629,13 +544,13 @@ while run:
     # Switch path from planar to non planar or vv
     if planarPath.isclick(mouse_pos[0], mouse_pos[1], mouse_left_click) and left_click.passed() >= 250:
         planarPathBoolean = bool(m.fmod(int(planarPathBoolean)+1, 2))
-        planarPath.color = green if planarPathBoolean else red
+        planarPath.color = v.green if planarPathBoolean else v.red
         left_click.refresh()
         
     # Switch to edit mode or vv
     if editMode.isclick(mouse_pos[0], mouse_pos[1], mouse_left_click) and left_click.passed() >= 250:
         editModeBoolean = bool(m.fmod(int(editModeBoolean)+1, 2))
-        editMode.color = green if editModeBoolean else red
+        editMode.color = v.green if editModeBoolean else v.red
         left_click.refresh()
  
     # Calculate all position and force variables based on current point
