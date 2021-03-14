@@ -12,3 +12,5 @@ class Key(Clock):
     def clicked(self, set):
         if set[self.key_code] and self.passed() >= self.debounceTime:
             return True
+        else:
+            return False

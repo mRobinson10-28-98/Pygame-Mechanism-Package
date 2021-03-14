@@ -1,11 +1,15 @@
 import csv
 import Basic_Functions as bf
+import Keys as ks
 
 class CsvWriter:
-    def __init__(self, filename, screen):
+    def __init__(self, filename, object, screen):
         self.filename = filename
         self.screen = screen
+        self.object = object
         self.csvList = []
+
+        self.screen.key_commanders.append(self)
 
     def append_for_csv(self, append_list):
         self.csvList.append(append_list)
@@ -18,11 +22,22 @@ class CsvWriter:
             for column in self.csvList:
                 lengthWriter.writerow(column)
 
-    def append_and_write_csv(self, iterate_list, append_list, iterate_function):
+    def append_and_write_csv(self):
         self.csvList = []
-        for object in iterate_list:
-            bf.initialize_screen(self.screen.window)
-            iterate_function(object)
-            self.append_for_csv(append_list())
+        for point in self.screen.points:
+            self.iterate_function(point)
+            self.append_for_csv(self.object.return_for_csv())
 
         self.write_csv()
+
+    def iterate_function(self, point):
+        self.screen.initialize()
+        self.object.inv_kinematics(point)
+        self.object.create()
+        self.screen.draw()
+
+    def check_key_commands(self, input_array):
+        if ks.space_click.clicked(input_array):
+            if ks.ctrl_click.clicked(input_array):
+                self.append_and_write_csv()
+                ks.ctrl_click.refresh()

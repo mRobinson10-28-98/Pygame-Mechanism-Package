@@ -2,8 +2,8 @@ from Key import Key
 import pygame as py
 
 left_click = Key(0)
-right_click = Key(2)
-k_click = Key(py.K_k, debounceTime=10)
+right_click = Key(2, debounceTime=10)
+k_click = Key(py.K_k)
 z_click = Key(py.K_z)
 r_click = Key(py.K_r)
 l_click = Key(py.K_l)
