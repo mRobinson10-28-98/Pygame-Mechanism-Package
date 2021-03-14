@@ -8,7 +8,6 @@ class CsvWriter:
         self.screen = screen
         self.object = object
         self.csvList = []
-
         self.screen.key_commanders.append(self)
 
     def append_for_csv(self, append_list):
@@ -41,3 +40,4 @@ class CsvWriter:
             if ks.ctrl_click.clicked(input_array):
                 self.append_and_write_csv()
                 ks.ctrl_click.refresh()
+                ks.space_click.refresh()

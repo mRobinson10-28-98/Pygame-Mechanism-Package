@@ -149,3 +149,15 @@ class Mouse:
                 self.append_point_planar(planar_offset)
 
             ks.right_click.refresh()
+
+        if self.holding_point and not self.screen.edit_mode:
+            if not self.screen.xy:
+                self.point.z = self.x
+                self.point.z_inches = pixels_to_inches(self.point.z) - v.origin_x
+                self.screen.point_index = self.screen.points.index(self.point)
+                self.render()
+            else:
+                self.point.x = self.x
+                self.point.x_inches = pixels_to_inches(self.point.x) - v.origin_x
+                self.screen.point_index = self.screen.points.index(self.point)
+                self.render()

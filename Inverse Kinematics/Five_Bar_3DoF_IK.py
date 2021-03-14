@@ -9,6 +9,7 @@ from Basic_Functions import inches_to_pixels
 from Point import Point
 from Linkage import Linkage
 from CsvWriter import CsvWriter
+from CsvReader import CsvReader
 from Five_Bar_3DoF_Leg import Leg
 from Key import Key
 from Screen import Screen
@@ -38,6 +39,7 @@ leg1 = Leg(v.linkLength1, v.linkLength2, v.linkLength3,
            v.linkLength4, v.linkLength5, v.linkLengthhip, screen)
 
 csvWriter = CsvWriter(fileWriteName, leg1, screen)
+csvReader = CsvReader(fileReadName, screen)
 
 mouse = Mouse(0, 0, screen)
 
@@ -64,29 +66,10 @@ while run:
     mouse_press = py.mouse.get_pressed()
     mouse_pos = py.mouse.get_pos()
     mouse.update(mouse_pos)
+
     mouse.function(mouse_press, leg1.lhipz)
 
-    if mouse.holding_point and not edit_mode_button.boolean:
-        if not screen.xy:
-            mouse.point.z = mouse.x
-            mouse.point.z_inches = pixels_to_inches(mouse.point.z) - v.origin_x
-            screen.point_index = screen.points.index(mouse.point)
-            mouse.render()
-        else:
-            mouse.point.x = mouse.x
-            mouse.point.x_inches = pixels_to_inches(mouse.point.x) - v.origin_x
-            screen.point_index = screen.points.index(mouse.point)
-            mouse.render()
-
     screen.check_key_commands(keys)
-
-    if ks.space_click.clicked(keys):
-        if ks.shift_click.clicked(keys):
-            screen.points = []
-            with open(fileReadName, 'r') as csv_read_file:
-                csv_reader = csv.reader(csv_read_file)
-                for line in csv_reader:
-                    screen.points.append(Point(int(float(line[3])), int(float(line[4])), int(float(line[5])), screen, screen.points))
 
     # Calculate all position and force variables based on current point
     leg1.inv_kinematics(screen.current_point)
