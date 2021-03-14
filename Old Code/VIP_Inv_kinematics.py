@@ -407,7 +407,7 @@ while run:
     if left_click.clicked():
         buttonBool = False
         for button in buttons:
-            if button.isclick(mouse_pos[0], mouse_pos[1], mouse_left_click):
+            if button.clicked(mouse_pos[0], mouse_pos[1], mouse_left_click):
                 buttonBool = True
 
         if xyScreen and not buttonBool:

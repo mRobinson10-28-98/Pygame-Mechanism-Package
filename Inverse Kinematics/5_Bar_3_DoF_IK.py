@@ -3,16 +3,23 @@ import math as m
 import csv
 
 import Variables as v
+import Basic_Functions as bf
 from Basic_Functions import pixels_to_inches
 from Basic_Functions import inches_to_pixels
 from Point import Point
 from Linkage import Linkage
+from CsvWriter import CsvWriter
+from Leg import Leg
+from Key import Key
 
 
-
+'''
 fileWriteName = '/home/pi/Documents/Motor Control/Normal Walking Gait/03032021.csv'
 fileReadName = '/home/pi/Documents/Motor Control/Normal Walking Gait/03032021.csv'
- 
+ '''
+fileWriteName = 'C:/Users/drunk/PycharmProjects/pythonProject/Sean/5 Bar 3 Dof Quadruped/Normal Walking Gaits/03132021.csv'
+fileReadName = 'C:/Users/drunk/PycharmProjects/pythonProject/Sean/5 Bar 3 Dof Quadruped/Normal Walking Gaits/03132021.csv'
+
 # Initiated pygame
 py.init()
  
@@ -45,11 +52,11 @@ def draw_screen():
     for linkage in linkages:
         linkage.render(win, xyScreen)
     for button in buttons:
-        button.render()
+        button.render(win)
     for point in points:
         point.render(win, xyScreen)
         
-    leg1.render()
+    leg1.render(win, xyScreen)
     py.display.update()
         
         
@@ -66,222 +73,12 @@ def create_leg1():
                        leg1.origin_y, -leg1.thetahip, v.blue, linkages, xy=False)
     linkage_hipy = Linkage(leg1.lhipy, leg1.jointhip_z,
                        leg1.jointhip_y, -leg1.thetahip + m.pi/2, v.blue, linkages, xy=False)
-    
-def initialize_screen():
-    py.time.delay(v.time_delay)
-    win.fill((255, 255, 255))
- 
-    for event in py.event.get():
-        if event.type == py.QUIT:
-            run = False
- 
-# x,y are coordinate points that are determined by clicking mouse
-# x,y coordinates are converted to inches in Point class before defined in Leg class
-# All Leg parameters in inches
-# All Angles referenced from y-axis +CCW
- 
- 
-class Leg:
-    def __init__(self, l1, l2, l3, l4, l5, lhipz):
-        self.origin_x = v.origin_x
-        self.origin_y = v.origin_y
-        self.l1 = l1
-        self.l2 = l2
-        self.l3 = l3
-        self.l4 = l4
-        self.l5 = l5
-        self.lhipz = lhipz
-        
-        self.x = 0
-        self.y = 0
-        self.z = 0
-        self.csvCoord = []
-        
-        self.lhipy = 0
-        self.theta1 = 0
-        self.theta2 = 0
-        self.theta3 = 0
-        self.theta4 = 0
-        self.thetahip = 0
-        self.csvThetas = []
-        
-        self.thetaRef = 0
-        self.angles = [self.theta1, self.theta2, self.theta3, self.theta4]
- 
-        self.joint2_x = self.origin_x + self.l2 * m.sin(self.theta2)
-        self.joint2_y = self.origin_y + self.l2 * m.cos(self.theta2)
- 
-        self.joint3_x = self.origin_x + self.l2 * \
-            m.sin(self.theta2) + self.l3 * m.sin(self.theta3)
-        self.joint3_y = self.origin_y + self.l2 * \
-            m.cos(self.theta2) + self.l3 * m.cos(self.theta3)
- 
-        self.joint4_x = self.origin_x + self.l1 * m.sin(self.theta1)
-        self.joint4_y = self.origin_y + self.l1 * m.cos(self.theta1)
- 
-        self.jointhip_z = self.origin_x + self.lhipz * m.cos(self.thetahip)
-        self.jointhip_y = self.origin_y - self.lhipz * m.sin(self.thetahip)
- 
-    def inv_kinematics(self):
-        self.thetaRef = m.acos(
-            (self.x**2 + self.y**2 - self.l1**2 - self.l5**2) / (2 * self.l1 * self.l5))
-        beta = m.atan2(self.l5 * m.sin(self.thetaRef),
-                       (self.l1 + self.l5 * m.cos(self.thetaRef)))
-        gamma = m.atan2(self.x, self.y)
- 
-        self.theta1 = gamma - beta
-        self.theta4 = self.theta1 + self.thetaRef
- 
-        RHS = self.l3**2 + self.l4**2 + self.l1**2 - self.l2**2 - (2 * self.l4 * self.l1 * m.cos(
-            self.theta4) * m.cos(self.theta1)) - (2 * self.l4 * self.l1 * m.sin(self.theta4) * m.sin(self.theta1))
-        a = RHS + 2 * self.l3 * self.l1 * \
-            m.cos(self.theta1) - 2 * self.l3 * self.l4 * m.cos(self.theta4)
-        b = 4 * self.l3 * self.l4 *\
-            m.sin(self.theta4) - 4 * self.l3 * self.l1 * m.sin(self.theta1)
-        c = RHS + 2 * self.l3 * self.l4 *\
-            m.cos(self.theta4) - 2 * self.l3 * self.l1 * m.cos(self.theta1)
- 
-        u1 = (-b + m.sqrt(b**2 - 4 * a * c)) / (2 * a)
- 
-        self.theta3 = 2 * m.atan(u1)
-        if self.theta3 <= 0:
-            self.theta3 += (2*m.pi)
- 
-        self.theta2 = m.asin((-self.l3 * m.sin(self.theta3) - self.l4 *
-                              m.sin(self.theta4) + self.l1 * m.sin(self.theta1))/self.l2)
- 
-        if (-self.l3 * m.cos(self.theta3) - self.l4 * m.cos(self.theta4) + self.l1 * m.cos(self.theta1))/self.l2 <= 0:
-            self.theta2 = m.pi - self.theta2
- 
-        self.joint2_x = self.origin_x + self.l2 * m.sin(self.theta2)
-        self.joint2_y = self.origin_y + self.l2 * m.cos(self.theta2)
- 
-        self.joint3_x = self.origin_x + self.l2 * \
-            m.sin(self.theta2) + self.l3 * m.sin(self.theta3)
-        self.joint3_y = self.origin_y + self.l2 * \
-            m.cos(self.theta2) + self.l3 * m.cos(self.theta3)
- 
-        self.joint4_x = self.origin_x + self.l1 * m.sin(self.theta1)
-        self.joint4_y = self.origin_y + self.l1 * m.cos(self.theta1)
- 
-        self.jointhip_z = self.origin_x + self.lhipz * m.cos(self.thetahip)
-        self.jointhip_y = self.origin_y - self.lhipz * m.sin(self.thetahip)
- 
-        self.lhipy = m.sqrt(self.z**2 + self.y**2 - self.lhipz**2)
-        self.thetahip = m.atan2(-self.y, self.z) + \
-            m.atan2(self.lhipy, self.lhipz)
- 
- 
-    def servo_angles(self):
-        if self.theta1 <= 0:
-            self.theta1 = (self.theta1+(2*m.pi))
-        elif self.theta1 >= 360:
-            self.theta1 = (self.theta1 - 2*m.pi)
- 
-        if self.theta2 <= 0:
-            self.theta2 = (self.theta2+(2*m.pi))
-        elif self.theta2 >= 360:
-            self.theta2 = (self.theta2 - 2*m.pi)
- 
-        if self.theta3 <= 0:
-            self.theta3 = (self.theta3+(2*m.pi))
-        elif self.theta3 >= 360:
-            self.theta3 = (self.theta3 - 2*m.pi)
- 
-        if self.theta4 <= 0:
-            self.theta4 = (self.theta4+(2*m.pi))
-        elif self.theta4 >= 360:
-            self.theta4 = (self.theta4 - 2*m.pi)
- 
-    def render(self):
-        if xyScreen:
-            py.draw.circle(win, v.black, (int(inches_to_pixels(self.joint2_x)), int(
-                inches_to_pixels(self.joint2_y))), 8)
-            py.draw.circle(win, v.black, (int(inches_to_pixels(self.joint3_x)), int(
-                inches_to_pixels(self.joint3_y))), 8)
-            py.draw.circle(win, v.black, (int(inches_to_pixels(self.joint4_x)), int(
-                inches_to_pixels(self.joint4_y))), 8)
-            py.draw.circle(win, v.purple, (int(inches_to_pixels(self.origin_x)), int(
-                inches_to_pixels(self.origin_y))), 10)
-        else:
-            py.draw.circle(win, v.black, (int(inches_to_pixels(self.jointhip_z)), int(
-                inches_to_pixels(self.jointhip_y))), 8)
-            py.draw.circle(win, v.purple, (int(inches_to_pixels(self.origin_x)), int(
-                inches_to_pixels(self.origin_y))), 10)
- 
-    def print_system(self):
-        print('Theta1: ' + str(m.degrees(self.theta1)))
-        print('Theta2: ' + str(m.degrees(self.theta1 - self.theta2)))
-        print('ThetaHip: ' + str(m.degrees(self.thetahip)))
 
-#         if self.theta1 - self.theta2 <= 0:
-#             print(m.degrees(
-#                 2*m.pi + self.theta1-self.theta2))
-#         else:
-#             print(m.degrees(self.theta1-self.theta2))
-        print('                             ')
-    
-    def append_for_csv(self):
-        t1Csv = self.theta1
-        t2Csv = self.theta2 - self.theta1
-        if t2Csv <= 0:
-            t2Csv += 2*m.pi 
-        thCsv = self.thetahip
-        print([str(m.degrees(t1Csv)), str(m.degrees(t2Csv)), str(m.degrees(thCsv))])
-        self.csvThetas.append([str(m.degrees(t1Csv)), str(m.degrees(t2Csv)), str(m.degrees(thCsv)),
-                               str(inches_to_pixels(self.x + v.origin_x)), str(inches_to_pixels(self.y + v.origin_y)), str(inches_to_pixels(self.z + v.origin_x))])
-        
-    def write_csv(self):
-        print(' -   -   -   -   -   -   -   -   -   -   -   -  ')
-        print(self.csvThetas)
-        with open(fileWriteName, 'w', newline = '') as new_file:
-            thetaWriter = csv.writer(new_file, delimiter = ',')
-            for column in self.csvThetas:
-                thetaWriter.writerow([str(column[0]), str(column[1]), str(column[2]), str(column[3]), str(column[4]), str(column[5])])
-                
-    def append_and_write_csv(self):
-        self.csvThetas = []
-        for point in range(0, len(points)):
-            initialize_screen()
-            linkages = []
-            current_point = points[point]
-            self.x = current_point.x_inches
-            self.y = current_point.y_inches
-            self.inv_kinematics()
-            self.servo_angles()
-            self.append_for_csv()
-            create_leg1()
-            draw_screen()
-            
-        self.write_csv()
- 
- 
-class Clock:
-    def __init__(self, time=0):
-        self.time = time
-        self.previous = False
-        self.current = False
- 
-    def refresh(self):
-        self.time = py.time.get_ticks()
- 
-    def passed(self):
-        return py.time.get_ticks() - self.time
- 
- 
-class Key(Clock):
-    def __init__(self, input, debounceTime = 150):
-        super(Key, self).__init__()
-        self.input = input
-        self.debounceTime = debounceTime
- 
-    def update(self, bttn):
-        self.input = bttn
- 
-    def clicked(self):
-        if self.input and self.passed() >= self.debounceTime:
-            return True
- 
+def csv_writer_iterate_function(point):
+    leg1.reassign_values(point)
+    leg1.inv_kinematics()
+    leg1.servo_angles()
+
  
 class Button:
     def __init__(self, y, height, name):
@@ -295,12 +92,12 @@ class Button:
         self.buttonFont = py.font.Font('freesansbold.ttf', self.fontSize)
         buttons.append(self)
  
-    def render(self):
-        py.draw.rect(win, v.black, (self.x, self.y, self.width, self.height))
+    def render(self, window):
+        py.draw.rect(window, v.black, (self.x, self.y, self.width, self.height))
         win.blit(self.buttonFont.render(self.name, True, self.color),
                  (self.x + self.fontSize/2, self.y + self.fontSize/3))
  
-    def isclick(self, x, y, click):
+    def clicked(self, x, y, click):
         if self.x <= x <= self.x + self.width:
             if self.y <= y <= self.y + self.height:
                 if click:
@@ -320,7 +117,7 @@ class Mouse:
         self.point.z = self.x
  
     def render(self):
-        self.point.render()
+        self.point.render(win, xyScreen)
  
  
 # List of Point elements
@@ -330,31 +127,25 @@ deleted_points = []
 # Buttons!
 buttons = []
  
- 
-keys = py.key.get_pressed()
-mouse_pos = py.mouse.get_pos()
-mouse_press = py.mouse.get_pressed()
-mouse_left_click = 0
-mouse_right_click = 0
- 
 leg1 = Leg(v.linkLength1, v.linkLength2, v.linkLength3,
            v.linkLength4, v.linkLength5, v.linkLengthhip)
- 
+
+csvWriter = CsvWriter(fileWriteName)
+
 mouse = Mouse(0, 0)
 
 #Left click is for adding points for the foot
-left_click = Key(mouse_left_click, 250)
-right_click = Key(mouse_right_click)
-k_click = Key(keys[py.K_k])
-k_click.debounceTime = 10
-z_click = Key(keys[py.K_z])
-r_click = Key(keys[py.K_r])
-l_click = Key(keys[py.K_l])
-j_click = Key(keys[py.K_j])
-p_click = Key(keys[py.K_p])
-space_click = Key(keys[py.K_SPACE])
-ctrl_click = Key(keys[py.K_LCTRL])
-shift_click = Key(keys[py.K_LSHIFT])
+left_click = Key(0)
+right_click = Key(2)
+k_click = Key(py.K_k, debounceTime=10)
+z_click = Key(py.K_z)
+r_click = Key(py.K_r)
+l_click = Key(py.K_l)
+j_click = Key(py.K_j)
+p_click = Key(py.K_p)
+space_click = Key(py.K_SPACE)
+ctrl_click = Key(py.K_LCTRL)
+shift_click = Key(py.K_LSHIFT)
 
  
 xyScreen = True
@@ -373,37 +164,24 @@ Point(inches_to_pixels(v.origin_x - 4),
 run = True
 test = False
 while run:
-    initialize_screen()
-    print(py.time.get_ticks())
+    bf.initialize_screen(win)
+
     # List of Links
     linkages = []
  
-    # User inputs for pygame
+    # Mouse Position
     keys = py.key.get_pressed()
-    mouse_pos = py.mouse.get_pos()
     mouse_press = py.mouse.get_pressed()
-    mouse_left_click = mouse_press[0]
-    mouse_right_click = mouse_press[2]
- 
+    mouse_pos = py.mouse.get_pos()
     mouse.x = mouse_pos[0]
     mouse.y = mouse_pos[1]
-    left_click.input = mouse_left_click
-    right_click.input = mouse_right_click
-    k_click.input = keys[py.K_k]
-    z_click.input = keys[py.K_z]
-    r_click.input = keys[py.K_r]
-    l_click.input = keys[py.K_l]
-    j_click.input = keys[py.K_j]
-    p_click.input = keys[py.K_p]
-    space_click.input = keys[py.K_SPACE]
-    ctrl_click.input = keys[py.K_LCTRL]
-    shift_click.input = keys[py.K_LSHIFT]
-    
+
+
     # First, check if any buttons are being clicked
-    if left_click.clicked():
+    if left_click.clicked(mouse_press):
         buttonBool = False
         for button in buttons:
-            if button.isclick(mouse_pos[0], mouse_pos[1], mouse_left_click):
+            if button.clicked(mouse_pos[0], mouse_pos[1], left_click.clicked(mouse_press)):
                 buttonBool = True
                 
         if not buttonBool:
@@ -450,8 +228,10 @@ while run:
                         y = mouse.y
                         previousPointIndex = point_index
                         xyScreen = False
+                        left_click.refresh()
                     else:
                         Point(mouse.x, mouse.y, inches_to_pixels(v.origin_x + leg1.lhipz), points)
+                        left_click.refresh()
                 
                 # If you've already clicked a point in the xy plane and are not in yx plane, create a point
                 elif not xyScreen and mouse.holdingPoint:
@@ -461,6 +241,7 @@ while run:
                     mouse.point = 0
                     point_index = previousPointIndex
                     xyScreen = True
+                    left_click.refresh()
  
     if mouse.holdingPoint and not editModeBoolean:
         mouse.point.z = mouse.x
@@ -469,7 +250,7 @@ while run:
         mouse.render()
  
     # If "k" is pressed, delete all points other than original
-    if k_click.clicked():
+    if k_click.clicked(keys):
         if not planarPathBoolean:
             points = []
             point_index = 0
@@ -479,77 +260,79 @@ while run:
             y = mouse.y
             previousPointIndex = point_index
             xyScreen = False
-            k_click.refresh()
+
         else:
             points = []
             point_index = 0
             Point(mouse.x, mouse.y, inches_to_pixels(v.origin_x + leg1.lhipz), points)
-            k_click.refresh()
+
+        k_click.refresh()
+
  
     # If "z" is pressed, delete previous point, and add it to deleted points list
-    if z_click.clicked():
+    if z_click.clicked(keys) and len(points) > 1:
         points.pop(-1)
         Point(points[-1].x, points[-1].y, points[-1].z, deleted_points)
         z_click.refresh()
+
  
     # If "r" is pressed, redraw point most previously deleted (redo)
-    if r_click.clicked():
-        if len(deleted_points) > 0:
-            points.append(deleted_points[-1])
-            deleted_points.pop(-1)
-        r_click.refresh()
+    if r_click.clicked(keys) and len(deleted_points) > 0:
+        points.append(deleted_points[-1])
+        deleted_points.pop(-1)
+    r_click.refresh()
+
  
     # If "l" is pressed, go to next point in list
-    if l_click.clicked():
+    if l_click.clicked(keys):
         if point_index < len(points) - 1:
             point_index += 1
         else:
             point_index = 0
         l_click.refresh()
+
  
     # If "j" is pressed, go to previous point in list
-    if j_click.clicked():
+    if j_click.clicked(keys):
         if point_index > 0:
             point_index = point_index - 1
         else:
             point_index = len(points) - 1
         j_click.refresh()
+
  
     # If "p" is clicked, print theta values
-    if p_click.clicked():
+    if p_click.clicked(keys):
         leg1.print_system()
         p_click.refresh()
+
    
-    if space_click.clicked():
-        if ctrl_click.clicked():
-            leg1.append_and_write_csv()
+    if space_click.clicked(keys):
+        if ctrl_click.clicked(keys):
+            csvWriter.append_and_write_csv(win, points, leg1.return_for_csv, csv_writer_iterate_function)
             ctrl_click.refresh()
         
-        if shift_click.clicked():
+        if shift_click.clicked(keys):
             points = []
             with open(fileReadName, 'r') as csv_read_file:
                 csv_reader = csv.reader(csv_read_file)
                 for line in csv_reader:
                     points.append(Point(int(float(line[3])), int(float(line[4])), int(float(line[5])), points))
-                
-            shift_click.refresh()
-        space_click.refresh()
-   
- 
+
     # If the flip screen button is clicked, flip the screen from xy to yz or yz to xy
-    if flipScreen.isclick(mouse_pos[0], mouse_pos[1], mouse_left_click) and left_click.passed() >= 250:
-        xyScreen = bool(m.fmod(int(xyScreen)+1, 2))
+    if flipScreen.clicked(mouse.x, mouse.y, left_click.clicked(mouse_press)):
+        xyScreen = not xyScreen
         left_click.refresh()
     
     # Switch path from planar to non planar or vv
-    if planarPath.isclick(mouse_pos[0], mouse_pos[1], mouse_left_click) and left_click.passed() >= 250:
-        planarPathBoolean = bool(m.fmod(int(planarPathBoolean)+1, 2))
+    if planarPath.clicked(mouse.x, mouse.y,  left_click.clicked(mouse_press)):
+        planarPathBoolean = not planarPathBoolean
         planarPath.color = v.green if planarPathBoolean else v.red
         left_click.refresh()
         
     # Switch to edit mode or vv
-    if editMode.isclick(mouse_pos[0], mouse_pos[1], mouse_left_click) and left_click.passed() >= 250:
-        editModeBoolean = bool(m.fmod(int(editModeBoolean)+1, 2))
+    if editMode.clicked(mouse.x, mouse.y,  left_click.clicked(mouse_press)):
+        editModeBoolean = not editModeBoolean
         editMode.color = v.green if editModeBoolean else v.red
         left_click.refresh()
  
@@ -560,7 +343,7 @@ while run:
     leg1.z = current_point.z_inches
     leg1.inv_kinematics()
     leg1.servo_angles()
-    
+
     create_leg1()
     draw_screen()
  

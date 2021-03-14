@@ -149,6 +149,24 @@ class Leg:
         #             print(m.degrees(self.theta1-self.theta2))
         print('                             ')
 
+    def reassign_values(self, point):
+        self.x = point.x_inches
+        self.y = point.y_inches
+        self.z = point.z_inches
+
+
+    def return_for_csv(self):
+        t1Csv = self.theta1
+        t2Csv = self.theta2 - self.theta1
+        if t2Csv <= 0:
+            t2Csv += 2 * m.pi
+        thCsv = self.thetahip
+        return [str(m.degrees(t1Csv)), str(m.degrees(t2Csv)), str(m.degrees(thCsv)),
+                               str(inches_to_pixels(self.x + v.origin_x)),
+                               str(inches_to_pixels(self.y + v.origin_y)),
+                               str(inches_to_pixels(self.z + v.origin_x))]
+
+'''
     def append_for_csv(self):
         t1Csv = self.theta1
         t2Csv = self.theta2 - self.theta1
@@ -157,7 +175,8 @@ class Leg:
         thCsv = self.thetahip
         print([str(m.degrees(t1Csv)), str(m.degrees(t2Csv)), str(m.degrees(thCsv))])
         self.csvThetas.append([str(m.degrees(t1Csv)), str(m.degrees(t2Csv)), str(m.degrees(thCsv)),
-                               str(inches_to_pixels(self.x + v.origin_x)), str(inches_to_pixels(self.y + v.origin_y)),
+                               str(inches_to_pixels(self.x + v.origin_x)),
+                               str(inches_to_pixels(self.y + v.origin_y)),
                                str(inches_to_pixels(self.z + v.origin_x))])
 
     def write_csv(self):
@@ -167,12 +186,13 @@ class Leg:
             thetaWriter = csv.writer(new_file, delimiter=',')
             for column in self.csvThetas:
                 thetaWriter.writerow(
-                    [str(column[0]), str(column[1]), str(column[2]), str(column[3]), str(column[4]), str(column[5])])
+                    [str(column[0]), str(column[1]), str(column[2]), str(column[3]), str(column[4]),
+                     str(column[5])])
 
     def append_and_write_csv(self):
         self.csvThetas = []
         for point in range(0, len(points)):
-            initialize_screen()
+            bf.initialize_screen(win)
             linkages = []
             current_point = points[point]
             self.x = current_point.x_inches
@@ -184,3 +204,4 @@ class Leg:
             draw_screen()
 
         self.write_csv()
+'''
