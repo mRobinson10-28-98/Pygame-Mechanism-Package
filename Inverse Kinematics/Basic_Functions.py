@@ -5,7 +5,6 @@ import pygame as py
 def pixels_to_inches(pixels):
     return (pixels * v.screen_dimension_inches) / v.screen_dimension
 
-
 # Converts length from inches to pixels (usually for display purposes)
 def inches_to_pixels(inches):
     return (inches * v.screen_dimension) / v.screen_dimension_inches

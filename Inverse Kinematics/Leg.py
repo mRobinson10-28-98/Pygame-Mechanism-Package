@@ -11,7 +11,7 @@ from Basic_Functions import inches_to_pixels
 # All Angles referenced from y-axis +CCW
 
 class Leg:
-    def __init__(self, l1, l2, l3, l4, l5, lhipz):
+    def __init__(self, l1, l2, l3, l4, l5, lhipz, screen):
         self.origin_x = v.origin_x
         self.origin_y = v.origin_y
         self.l1 = l1
@@ -20,6 +20,7 @@ class Leg:
         self.l4 = l4
         self.l5 = l5
         self.lhipz = lhipz
+        self.screen = screen
 
         self.x = 0
         self.y = 0
@@ -121,20 +122,20 @@ class Leg:
         elif self.theta4 >= 360:
             self.theta4 = (self.theta4 - 2 * m.pi)
 
-    def render(self, window, xyScreen):
-        if xyScreen:
-            py.draw.circle(window, v.black, (int(inches_to_pixels(self.joint2_x)), int(
+    def render(self):
+        if self.screen.xy:
+            py.draw.circle(self.screen.window, v.black, (int(inches_to_pixels(self.joint2_x)), int(
                 inches_to_pixels(self.joint2_y))), 8)
-            py.draw.circle(window, v.black, (int(inches_to_pixels(self.joint3_x)), int(
+            py.draw.circle(self.screen.window, v.black, (int(inches_to_pixels(self.joint3_x)), int(
                 inches_to_pixels(self.joint3_y))), 8)
-            py.draw.circle(window, v.black, (int(inches_to_pixels(self.joint4_x)), int(
+            py.draw.circle(self.screen.window, v.black, (int(inches_to_pixels(self.joint4_x)), int(
                 inches_to_pixels(self.joint4_y))), 8)
-            py.draw.circle(window, v.purple, (int(inches_to_pixels(self.origin_x)), int(
+            py.draw.circle(self.screen.window, v.purple, (int(inches_to_pixels(self.origin_x)), int(
                 inches_to_pixels(self.origin_y))), 10)
         else:
-            py.draw.circle(window, v.black, (int(inches_to_pixels(self.jointhip_z)), int(
+            py.draw.circle(self.screen.window, v.black, (int(inches_to_pixels(self.jointhip_z)), int(
                 inches_to_pixels(self.jointhip_y))), 8)
-            py.draw.circle(window, v.purple, (int(inches_to_pixels(self.origin_x)), int(
+            py.draw.circle(self.screen.window, v.purple, (int(inches_to_pixels(self.origin_x)), int(
                 inches_to_pixels(self.origin_y))), 10)
 
     def print_system(self):
