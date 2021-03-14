@@ -30,7 +30,7 @@ class Mouse:
             if button.clicked(self.x, self.y, input_boolean):
                 self.onButton = True
 
-    def append_point(self, input_key, planar_path_boolean, planar_offset):
+    def append_point(self, planar_path_boolean, planar_offset):
         if self.screen.xy:
             if not planar_path_boolean:
                 self.holdingPoint = True
@@ -39,10 +39,8 @@ class Mouse:
                 self.fixedy = self.y
                 self.previous_point_index = self.screen.point_index
                 self.screen.xy = False
-                input_key.refresh()
             else:
                 Point(self.x, self.y, inches_to_pixels(v.origin_x + planar_offset), self.screen, self.screen.points)
-                input_key.refresh()
 
         # If you've already clicked a point in the xy plane and are now in zy plane, create a point
         elif not self.screen.xy and self.holdingPoint:
@@ -52,7 +50,6 @@ class Mouse:
             self.point = 0
             self.screen.point_index = self.previous_point_index
             self.screen.xy = True
-            input_key.refresh()
 
     def edit_point(self):
         pass
