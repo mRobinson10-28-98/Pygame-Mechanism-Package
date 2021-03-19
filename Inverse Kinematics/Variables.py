@@ -5,7 +5,7 @@ time_delay = 30
 screen_dimension = 800
 
 # Screen width and height in inches for math
-screen_dimension_inches = 24
+screen_dimension_inches = 32
 
 # Screen multiplier
 multiplier = 2

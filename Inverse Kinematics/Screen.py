@@ -4,17 +4,20 @@ import Variables as v
 import pygame as py
 import Keys as ks
 from Point import Point
+from Button import Button
+
 
 class Screen:
-    def __init__(self, window):
-        self.window = window
-        self.xy_modifier = 0
-        self.planar_path_modifier = 0
-        self.edit_mode_modifier = 0
+    def __init__(self):
+        py.init()
 
-        self.xy = True
-        self.planar_path = True
-        self.edit_mode = False
+        # Creates the window and defines its dimensions
+        self.window = py.display.set_mode((v.screen_dimension, v.screen_dimension))
+
+        # Title
+        self.caption = ''
+        py.display.set_caption(self.caption)
+
 
         self.points = []
         self.linkages = []
@@ -25,14 +28,19 @@ class Screen:
         self.point_index = 0
         self.current_point = 0
 
+        self.xy = True
+        self.planar_path = True
+        self.xy_modifier = Button(self, 10, 25, "XY SCREEN", True, v.green)
+        self.planar_path_modifier = Button(self, 50, 25, "Keep Path Planar", True, v.green)
+
     def initialize(self):
         py.time.delay(v.time_delay)
         self.window.fill((255, 255, 255))
 
+        self.linkages = []
         self.current_point = self.points[self.point_index]
         self.xy = self.xy_modifier.boolean
         self.planar_path = self.planar_path_modifier.boolean
-        self.edit_mode = self.edit_mode_modifier.boolean
 
         for event in py.event.get():
             if event.type == py.QUIT:
@@ -100,6 +108,32 @@ class Screen:
             else:
                 self.point_index = len(self.points) - 1
             ks.j_click.refresh()
+
+        if ks.a_click.clicked(input_array):
+            if self.xy:
+                self.current_point.x -= 1
+            else:
+                self.current_point.z -= 1
+            ks.a_click.refresh()
+
+        if ks.d_click.clicked(input_array):
+            if self.xy:
+                self.current_point.x += 1
+            else:
+                self.current_point.z += 1
+            ks.d_click.refresh()
+
+        if ks.w_click.clicked(input_array):
+            self.current_point.y -= 1
+            ks.w_click.refresh()
+
+        if ks.s_click.clicked(input_array):
+            self.current_point.y += 1
+            ks.s_click.refresh()
+
+        self.current_point.x_inches = pixels_to_inches(self.current_point.x) - v.origin_x
+        self.current_point.y_inches = pixels_to_inches(self.current_point.y) - v.origin_y
+        self.current_point.z_inches = pixels_to_inches(self.current_point.z) - v.origin_x
 
         for key_commander in self.key_commanders:
             key_commander.check_key_commands(input_array)

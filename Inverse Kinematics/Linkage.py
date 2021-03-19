@@ -1,13 +1,11 @@
 import pygame as py
 import math as m
 
-import Variables as v
-from Basic_Functions import pixels_to_inches
 from Basic_Functions import inches_to_pixels
 
 # All Linkage parameters input in iches, then converted in __init__ to pixels
 class Linkage:
-    def __init__(self, length, x1, y1, theta, color, screen, xy=True):
+    def __init__(self, screen, length, x1, y1, theta, color, xy=True):
         self.x1 = inches_to_pixels(x1)
         self.y1 = inches_to_pixels(y1)
         self.length = inches_to_pixels(length)

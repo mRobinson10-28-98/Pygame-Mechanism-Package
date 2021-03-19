@@ -116,39 +116,35 @@ class Mouse:
         self.check_buttons(input_set)
         # First, check if any buttons are being clicked
         if ks.left_click.clicked(input_set) and not self.onButton:
+            # If no buttons are being clicked, and edit mode is not on...
+            # Check if in planar path mode, and if so, add point to plane specifying xy plane offset in z direction
+            # If not planar path, fix a point to the screen and change screens to append a final point
+            # Once on the other screen, the point will be constrained to the previous plane and move only along the 3rd axis
+            if self.screen.xy and self.screen.planar_path:
+                self.append_point_planar(planar_offset)
 
-            if self.screen.edit_mode:
-                self.edit_point()
-
-            else:
-                # If no buttons are being clicked, and edit mode is not on...
-                # Check if in planar path mode, and if so, add point to plane specifying xy plane offset in z direction
-                # If not planar path, fix a point to the screen and change screens to append a final point
-                # Once on the other screen, the point will be constrained to the previous plane and move only along the 3rd axis
-                if self.screen.xy and self.screen.planar_path:
-                    self.append_point_planar(planar_offset)
-
-                elif not self.screen.planar_path:
-                    if not self.holding_point:
-                        if self.screen.xy:
-                            self.fix_point_xy()
-                        else:
-                            self.fix_point_zy()
-
+            elif not self.screen.planar_path:
+                if not self.holding_point:
+                    if self.screen.xy:
+                        self.fix_point_xy()
                     else:
-                        if self.screen.xy:
-                            self.append_point_xy()
-                        else:
-                            self.append_point_zy()
+                        self.fix_point_zy()
+
+                else:
+                    if self.screen.xy:
+                        self.append_point_xy()
+                    else:
+                        self.append_point_zy()
 
             ks.left_click.refresh()
 
         if ks.right_click.clicked(input_set) and not self.onButton:
-            self.screen.points = []
             if self.screen.xy and self.screen.planar_path:
+                self.screen.points = []
+                self.screen.point_index = 0
                 self.append_point_planar(planar_offset)
 
-            ks.right_click.refresh()
+                ks.right_click.refresh()
 
         if self.holding_point and not self.screen.edit_mode:
             if not self.screen.xy:

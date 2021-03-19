@@ -1,10 +1,11 @@
 import csv
-import Basic_Functions as bf
+
 import Keys as ks
+
 from Point import Point
 
 class CsvReader:
-    def __init__(self, filename, screen):
+    def __init__(self, screen, filename):
         self.filename = filename
         self.screen = screen
         self.csvList = []
@@ -16,10 +17,9 @@ class CsvReader:
             csv_reader = csv.reader(csv_read_file)
             for line in csv_reader:
                 self.screen.points.append(
-                    Point(int(float(line[3])), int(float(line[4])), int(float(line[5])), self.screen, self.screen.points))
+                    Point(int(float(line[0])), int(float(line[1])), int(float(line[2])), self.screen, self.screen.points))
 
     def check_key_commands(self, input_array):
-        print(ks.space_click.clicked(input_array))
         if ks.space_click.clicked(input_array):
             if ks.shift_click.clicked(input_array):
                 self.read_and_append_csv()

@@ -1,9 +1,9 @@
 import csv
-import Basic_Functions as bf
+
 import Keys as ks
 
 class CsvWriter:
-    def __init__(self, filename, object, screen):
+    def __init__(self, screen, filename, object):
         self.filename = filename
         self.screen = screen
         self.object = object
@@ -23,15 +23,16 @@ class CsvWriter:
 
     def append_and_write_csv(self):
         self.csvList = []
-        for point in self.screen.points:
-            self.iterate_function(point)
+        for index in range(0, len(self.screen.points)):
+            self.screen.point_index = index
+            self.iterate_function()
             self.append_for_csv(self.object.return_for_csv())
 
         self.write_csv()
 
-    def iterate_function(self, point):
+    def iterate_function(self):
         self.screen.initialize()
-        self.object.inv_kinematics(point)
+        self.object.inv_kinematics()
         self.object.create()
         self.screen.draw()
 
