@@ -10,7 +10,7 @@ from Basic_Functions import inches_to_pixels
 # Must give an x,y,z position, as well as the screen object
 # Also must give specific set from that screen object (usually screen.points)
 class Point:
-    def __init__(self, x, y, z, screen, set):
+    def __init__(self, screen, x, y, z, set):
         self.x = int(x)
         self.y = int(y)
         self.z = int(z)

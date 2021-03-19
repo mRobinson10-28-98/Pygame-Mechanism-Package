@@ -84,7 +84,7 @@ class Screen:
         # If "z" is pressed, delete previous point, and add it to deleted points list
         if ks.z_click.clicked(input_array) and len(self.points) > 1:
             self.points.pop(-1)
-            Point(self.points[-1].x, self.points[-1].y, self.points[-1].z, self, self.deleted_points)
+            Point(self, self.points[-1].x, self.points[-1].y, self.points[-1].z, self.deleted_points)
             ks.z_click.refresh()
 
         # If "r" is pressed, redraw point most previously deleted (redo)

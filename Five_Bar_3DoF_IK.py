@@ -32,9 +32,9 @@ leg1 = Leg(screen, v.linkLength1, v.linkLength2, v.linkLength3,
 csvWriter = CsvWriter(screen, fileWriteName, leg1)
 csvReader = CsvReader(screen, fileReadName)
 
-mouse = Mouse(0, 0, screen)
+mouse = Mouse(screen, 0, 0)
 
-Point(inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y + 12), 0, screen, screen.points)
+Point(screen, inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y + 12), 0, screen.points)
 
 run = True
 test = False

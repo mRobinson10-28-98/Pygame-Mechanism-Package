@@ -17,7 +17,7 @@ class CsvReader:
             csv_reader = csv.reader(csv_read_file)
             for line in csv_reader:
                 self.screen.points.append(
-                    Point(int(float(line[0])), int(float(line[1])), int(float(line[2])), self.screen, self.screen.points))
+                    Point(self.screen, int(float(line[0])), int(float(line[1])), int(float(line[2])), self.screen.points))
 
     def check_key_commands(self, input_array):
         if ks.space_click.clicked(input_array):

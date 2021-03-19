@@ -1,12 +1,15 @@
 import pygame as py
+
+import Keys as ks
 import Variables as v
-from Point import Point
+
 from Basic_Functions import pixels_to_inches
 from Basic_Functions import inches_to_pixels
-import Keys as ks
+from Point import Point
+
 
 class Mouse:
-    def __init__(self, x, y, screen):
+    def __init__(self, screen, x, y):
         self.x = x
         self.y = y
         self.screen = screen
@@ -44,7 +47,7 @@ class Mouse:
                 ks.left_click.refresh()
 
     def append_point_planar(self, planar_offset):
-        Point(self.x, self.y, inches_to_pixels(v.origin_x + planar_offset), self.screen, self.screen.points)
+        Point(self.screen, self.x, self.y, inches_to_pixels(v.origin_x + planar_offset), self.screen.points)
 
     def fix_point_xy(self):
         self.holding_point = True
@@ -65,7 +68,7 @@ class Mouse:
         # If you've already clicked a point in the xy plane and are now in zy plane, create a point
     def append_point_xy(self):
         self.screen.points.pop(-1)
-        Point(self.x, self.fixedy, self.fixedz, self.screen, self.screen.points)
+        Point(self.screen, self.x, self.fixedy, self.fixedz, self.screen.points)
         self.holding_point = False
         self.point = 0
         self.screen.point_index = self.previous_point_index
@@ -73,44 +76,11 @@ class Mouse:
 
     def append_point_zy(self):
         self.screen.points.pop(-1)
-        Point(self.fixedx, self.fixedy, self.x, self.screen, self.screen.points)
+        Point(self.screen, self.fixedx, self.fixedy, self.x, self.screen.points)
         self.holding_point = False
         self.point = 0
         self.screen.point_index = self.previous_point_index
         self.xy = True
-
-    def edit_point(self):
-        pass
-        '''
-        if xyScreen:
-            if not mouse.holdingPoint:
-                indexClosest = 0
-                pointClosest = 0
-                rShortest = 10000
-                for point in points:
-                    r = m.sqrt((mouse.x - point.x) ** 2 + (mouse.y - point.y) ** 2)
-                    if r < rShortest:
-                        rShortest = r
-                        indexClosest = points.index(point)
-                points.pop(indexClosest)
-                mouse.holdingPoint = True
-                left_click.refresh()
-
-            else:
-                if planarPath.boolean:
-                    points.insert(indexClosest, Point(mouse.x, mouse.y, inches_to_pixels(v.origin_x + leg1.lhipz)))
-                    mouse.holdingItem = False
-                    left_click.refresh()
-                else:
-                    mouse.holdingItem = False
-                    x = mouse.x
-                    y = mouse.y
-                    screen.xy = False
-
-        else:
-            points.insert(indexClosest, Point(x, y, mouse.x))
-            left_click.refresh()
-        '''
 
     def function(self, input_set, planar_offset):
         self.check_buttons(input_set)
