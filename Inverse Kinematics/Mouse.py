@@ -51,7 +51,7 @@ class Mouse:
 
     def fix_point_xy(self):
         self.holding_point = True
-        self.point = Point(self.x, self.y, self.x, self.screen, self.screen.points)
+        self.point = Point(self.screen, self.x, self.y, self.x, self.screen.points)
         self.fixedx = self.x
         self.fixedy = self.y
         self.previous_point_index = self.screen.point_index
@@ -59,7 +59,7 @@ class Mouse:
 
     def fix_point_zy(self):
         self.holding_point = True
-        self.point = Point(self.x, self.y, self.x, self.screen, self.screen.points)
+        self.point = Point(self.screen, self.x, self.y, self.x, self.screen.points)
         self.fixedz = self.x
         self.fixedy = self.y
         self.previous_point_index = self.screen.point_index
@@ -116,7 +116,7 @@ class Mouse:
 
                 ks.right_click.refresh()
 
-        if self.holding_point and not self.screen.edit_mode:
+        if self.holding_point:
             if not self.screen.xy:
                 self.point.z = self.x
                 self.point.z_inches = pixels_to_inches(self.point.z) - v.origin_x

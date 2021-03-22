@@ -19,12 +19,13 @@ from Mouse import Mouse
 '''
 fileWriteName = '/home/pi/Documents/Motor Control/Normal Walking Gait/03032021.csv'
 fileReadName = '/home/pi/Documents/Motor Control/Normal Walking Gait/03032021.csv'
- '''
+'''
+
+
 fileWriteName = 'C:/Users/drunk/PycharmProjects/pythonProject/Pygame Mechanism Module/Pygame-Mechanism-Module/Normal Walking Gaits/03132021.csv'
 fileReadName = 'C:/Users/drunk/PycharmProjects/pythonProject/Pygame Mechanism Module/Pygame-Mechanism-Module/Normal Walking Gaits/03132021.csv'
 
 screen = Screen()
-
 
 leg1 = Leg(screen, v.linkLength1, v.linkLength2, v.linkLength3,
            v.linkLength4, v.linkLength5, v.linkLengthhip)

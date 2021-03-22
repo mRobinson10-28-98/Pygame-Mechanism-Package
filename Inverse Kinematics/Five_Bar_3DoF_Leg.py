@@ -15,21 +15,21 @@ from Linkage import Linkage
 
 class Leg:
     def __init__(self, screen, l1, l2, l3, l4, l5, lhipz):
-        self.origin_x = v.origin_x
-        self.origin_y = v.origin_y
         self.l1 = l1
         self.l2 = l2
         self.l3 = l3
         self.l4 = l4
         self.l5 = l5
         self.lhipz = lhipz
+
+        self.origin_x = v.origin_x
+        self.origin_y = v.origin_y
         self.screen = screen
         self.screen.key_commanders.append(self)
 
         self.x = 0
         self.y = 0
         self.z = 0
-        self.csvCoord = []
 
         self.lhipy = 0
         self.theta1 = 0
@@ -37,7 +37,6 @@ class Leg:
         self.theta3 = 0
         self.theta4 = 0
         self.thetahip = 0
-        self.csvThetas = []
 
         self.thetaRef = 0
         self.angles = [self.theta1, self.theta2, self.theta3, self.theta4]
