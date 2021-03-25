@@ -5,25 +5,7 @@ time_delay = 30
 screen_dimension = 800
 
 # Screen width and height in inches for math
-screen_dimension_inches = 32
-
-# Screen multiplier
-multiplier = 2
-
-# Link Lengths in inches (Thigh, crank, coupler, follower, calf, hip)
-linkLength1 = 4.5
-linkLength2 = 1.5
-linkLength3 = 4.5
-linkLength4 = 1.5
-linkLength5 = 6.5 - linkLength4
-linkLengthhip = 2
-
-linkLength1 *= multiplier
-linkLength2 *= multiplier
-linkLength3 *= multiplier
-linkLength4 *= multiplier
-linkLength5 *= multiplier
-linkLengthhip *= multiplier
+screen_dimension_inches = 12
 
 # Mechanism origin in screen (for visuals only)
 origin_x = screen_dimension_inches / 2

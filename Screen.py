@@ -48,10 +48,10 @@ class Screen:
 
     def draw(self, additional_renders = []):
         py.draw.line(self.window, v.gray,
-                     (inches_to_pixels(v.origin_x - v.screen_dimension_inches / 2), inches_to_pixels(v.origin_y)),
-                     (inches_to_pixels(v.origin_x + v.screen_dimension_inches / 2), inches_to_pixels(v.origin_y)))
+                     (inches_to_pixels(v.origin_x - v.screen_dimension_inches), inches_to_pixels(v.origin_y)),
+                     (inches_to_pixels(v.origin_x + v.screen_dimension_inches), inches_to_pixels(v.origin_y)))
         py.draw.line(self.window, v.gray,
-                     (inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y - v.screen_dimension_inches / 2)),
+                     (inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y - v.screen_dimension_inches)),
                      (inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y + v.screen_dimension_inches)))
         axisFont = py.font.Font('freesansbold.ttf', 20)
 
