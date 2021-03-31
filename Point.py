@@ -2,9 +2,6 @@ import pygame as py
 import math as m
 
 import Variables as v
-from Basic_Functions import pixels_to_inches
-from Basic_Functions import inches_to_pixels
-
 
 # Point class defines the position of a point for inverse kinematics
 # Must give an x,y,z position, as well as the screen object
@@ -19,9 +16,9 @@ class Point:
 
         self.color = v.red
         self.radius = 3
-        self.x_inches = pixels_to_inches(self.x) - v.origin_x
-        self.y_inches = pixels_to_inches(self.y) - v.origin_y
-        self.z_inches = pixels_to_inches(self.z) - v.origin_x
+        self.x_inches = self.screen.pixels_to_inches(self.x) - self.screen.origin_x
+        self.y_inches = self.screen.pixels_to_inches(self.y) - self.screen.origin_y
+        self.z_inches = self.screen.pixels_to_inches(self.z) - self.screen.origin_x
         self.set.append(self)
 
     def render(self):

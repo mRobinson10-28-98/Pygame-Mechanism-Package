@@ -3,8 +3,6 @@ import math as m
 
 import Keys as ks
 import Variables as v
-
-from Basic_Functions import inches_to_pixels
 from Linkage import Linkage
 
 
@@ -22,10 +20,14 @@ class Leg:
         self.l5 = l5
         self.lhipz = lhipz
 
-        self.origin_x = v.origin_x
-        self.origin_y = v.origin_y
         self.screen = screen
         self.screen.key_commanders.append(self)
+
+        self.max_range = self.l1 + self.l5
+        self.min_range = abs(self.l1 - self.l5)
+
+        self.origin_x = self.screen.origin_x
+        self.origin_y = self.screen.origin_y
 
         self.x = 0
         self.y = 0
@@ -133,19 +135,23 @@ class Leg:
 
     def render(self):
         if self.screen.xy:
-            py.draw.circle(self.screen.window, v.black, (int(inches_to_pixels(self.joint2[0])), int(
-                inches_to_pixels(self.joint2[1]))), 8)
-            py.draw.circle(self.screen.window, v.black, (int(inches_to_pixels(self.joint3[0])), int(
-                inches_to_pixels(self.joint3[1]))), 8)
-            py.draw.circle(self.screen.window, v.black, (int(inches_to_pixels(self.joint4[0])), int(
-                inches_to_pixels(self.joint4[1]))), 8)
-            py.draw.circle(self.screen.window, v.purple, (int(inches_to_pixels(self.origin_x)), int(
-                inches_to_pixels(self.origin_y))), 10)
+            py.draw.circle(self.screen.window, v.black, (int(self.screen.inches_to_pixels(self.joint2[0])), int(
+                self.screen.inches_to_pixels(self.joint2[1]))), 8)
+            py.draw.circle(self.screen.window, v.black, (int(self.screen.inches_to_pixels(self.joint3[0])), int(
+                self.screen.inches_to_pixels(self.joint3[1]))), 8)
+            py.draw.circle(self.screen.window, v.black, (int(self.screen.inches_to_pixels(self.joint4[0])), int(
+                self.screen.inches_to_pixels(self.joint4[1]))), 8)
+            py.draw.circle(self.screen.window, v.purple, (int(self.screen.inches_to_pixels(self.origin_x)), int(
+                self.screen.inches_to_pixels(self.origin_y))), 10)
+            py.draw.circle(self.screen.window, v.red, (int(self.screen.inches_to_pixels(self.origin_x)), int(
+                self.screen.inches_to_pixels(self.origin_y))), self.screen.inches_to_pixels(self.max_range), 2)
+            py.draw.circle(self.screen.window, v.red, (int(self.screen.inches_to_pixels(self.origin_x)), int(
+                self.screen.inches_to_pixels(self.origin_y))), self.screen.inches_to_pixels(self.min_range), 2)
         else:
-            py.draw.circle(self.screen.window, v.black, (int(inches_to_pixels(self.jointhip[0])), int(
-                inches_to_pixels(self.jointhip[1]))), 8)
-            py.draw.circle(self.screen.window, v.purple, (int(inches_to_pixels(self.origin_x)), int(
-                inches_to_pixels(self.origin_y))), 10)
+            py.draw.circle(self.screen.window, v.black, (int(self.screen.inches_to_pixels(self.jointhip[0])), int(
+                self.screen.inches_to_pixels(self.jointhip[1]))), 8)
+            py.draw.circle(self.screen.window, v.purple, (int(self.screen.inches_to_pixels(self.origin_x)), int(
+                self.screen.inches_to_pixels(self.origin_y))), 10)
 
     def print_system(self):
         print('Theta1: ' + str(m.degrees(self.theta1)))
@@ -182,9 +188,9 @@ class Leg:
         elif thCsv >= 360:
             thCsv = (thCsv - 2 * m.pi)
 
-        return [str(int(inches_to_pixels(self.x + v.origin_x))),
-                               str(int(inches_to_pixels(self.y + v.origin_y))),
-                               str(int(inches_to_pixels(self.z + v.origin_x))),
+        return [str(int(self.screen.inches_to_pixels(self.x + self.origin_x))),
+                               str(int(self.screen.inches_to_pixels(self.y + self.origin_y))),
+                               str(int(self.screen.inches_to_pixels(self.z + self.origin_x))),
                 str(int(m.degrees(t1Csv))), str(int(m.degrees(t2Csv))), str(int(m.degrees(thCsv)))]
 
     def check_key_commands(self, input_array):

@@ -1,18 +1,22 @@
-from Basic_Functions import pixels_to_inches
-from Basic_Functions import inches_to_pixels
-import Variables as v
 import pygame as py
+
+import Variables as v
 import Keys as ks
 from Point import Point
 from Button import Button
 
 
 class Screen:
-    def __init__(self):
+    def __init__(self, screen_dimension_pixels, screen_dimension_inches):
         py.init()
 
+        self.dimension_pixels = screen_dimension_pixels
+        self.dimension_inches = screen_dimension_inches
+        self.origin_x = self.dimension_inches / 2
+        self.origin_y = self.dimension_inches / 2
+
         # Creates the window and defines its dimensions
-        self.window = py.display.set_mode((v.screen_dimension, v.screen_dimension))
+        self.window = py.display.set_mode((self.dimension_pixels, self.dimension_pixels))
 
         # Title
         self.caption = ''
@@ -33,6 +37,14 @@ class Screen:
         self.xy_modifier = Button(self, 10, 25, "XY SCREEN", True, v.green)
         self.planar_path_modifier = Button(self, 50, 25, "Keep Path Planar", True, v.green)
 
+    # Converts length from pixels to inches (usually for kinematic analysis)
+    def pixels_to_inches(self, pixels):
+        return (pixels * self.dimension_inches) / self.dimension_pixels
+
+    # Converts length from inches to pixels (usually for display purposes)
+    def inches_to_pixels(self, inches):
+        return (inches * self.dimension_pixels) / self.dimension_inches
+
     def initialize(self):
         py.time.delay(v.time_delay)
         self.window.fill((255, 255, 255))
@@ -48,24 +60,24 @@ class Screen:
 
     def draw(self, additional_renders = []):
         py.draw.line(self.window, v.gray,
-                     (inches_to_pixels(v.origin_x - v.screen_dimension_inches), inches_to_pixels(v.origin_y)),
-                     (inches_to_pixels(v.origin_x + v.screen_dimension_inches), inches_to_pixels(v.origin_y)))
+                     (self.inches_to_pixels(self.origin_x - self.dimension_inches), self.inches_to_pixels(self.origin_y)),
+                     (self.inches_to_pixels(self.origin_x + self.dimension_inches), self.inches_to_pixels(self.origin_y)))
         py.draw.line(self.window, v.gray,
-                     (inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y - v.screen_dimension_inches)),
-                     (inches_to_pixels(v.origin_x), inches_to_pixels(v.origin_y + v.screen_dimension_inches)))
+                     (self.inches_to_pixels(self.origin_x), self.inches_to_pixels(self.origin_y - self.dimension_inches)),
+                     (self.inches_to_pixels(self.origin_x), self.inches_to_pixels(self.origin_y + self.dimension_inches)))
         axisFont = py.font.Font('freesansbold.ttf', 20)
 
         if self.xy:
             self.window.blit(axisFont.render("X", True, v.black),
-                               (v.screen_dimension - 20, inches_to_pixels(v.origin_y)))
+                             (self.dimension_pixels - 20, self.inches_to_pixels(self.origin_y)))
             self.window.blit(axisFont.render("Y", True, v.black),
-                               (inches_to_pixels(v.origin_x), v.screen_dimension - 20))
+                             (self.inches_to_pixels(self.origin_x), self.dimension_pixels - 20))
 
         else:
             self.window.blit(axisFont.render("Z", True, v.black),
-                               (v.screen_dimension - 20, inches_to_pixels(v.origin_y)))
+                             (self.dimension_pixels - 20, self.inches_to_pixels(self.origin_y)))
             self.window.blit(axisFont.render("Y", True, v.black),
-                               (inches_to_pixels(v.origin_x), v.screen_dimension - 20))
+                             (self.inches_to_pixels(self.origin_x), self.dimension_pixels - 20))
 
         for point in self.points:
             point.render()
@@ -131,9 +143,9 @@ class Screen:
             self.current_point.y += 1
             ks.s_click.refresh()
 
-        self.current_point.x_inches = pixels_to_inches(self.current_point.x) - v.origin_x
-        self.current_point.y_inches = pixels_to_inches(self.current_point.y) - v.origin_y
-        self.current_point.z_inches = pixels_to_inches(self.current_point.z) - v.origin_x
+        self.current_point.x_inches = self.pixels_to_inches(self.current_point.x) - self.origin_x
+        self.current_point.y_inches = self.pixels_to_inches(self.current_point.y) - self.origin_y
+        self.current_point.z_inches = self.pixels_to_inches(self.current_point.z) - self.origin_x
 
         for key_commander in self.key_commanders:
             key_commander.check_key_commands(input_array)

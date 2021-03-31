@@ -17,9 +17,9 @@ class CsvWriter:
         print(' -   -   -   -   -   -   -   -   -   -   -   -  ')
         print(self.csvList)
         with open(self.filename, 'w', newline='') as new_file:
-            lengthWriter = csv.writer(new_file, delimiter=',')
-            for column in self.csvList:
-                lengthWriter.writerow(column)
+            writer = csv.writer(new_file, delimiter=',')
+            for row in self.csvList:
+                writer.writerow(row)
 
     def append_and_write_csv(self):
         self.csvList = []

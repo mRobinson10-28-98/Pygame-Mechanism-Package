@@ -12,7 +12,7 @@ class Button:
         self.screen = screen
         self.fontSize = int(2 * self.height / 3)
         self.width = 2 * (len(self.name) * self.fontSize) / 3
-        self.x = v.screen_dimension - self.width - 10
+        self.x = self.screen.dimension_pixels - self.width - 10
         self.color = color
         self.buttonFont = py.font.Font('freesansbold.ttf', self.fontSize)
         self.screen.buttons.append(self)

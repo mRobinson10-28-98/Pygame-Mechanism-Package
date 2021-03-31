@@ -2,9 +2,6 @@ import pygame as py
 
 import Keys as ks
 import Variables as v
-
-from Basic_Functions import pixels_to_inches
-from Basic_Functions import inches_to_pixels
 from Point import Point
 
 
@@ -47,7 +44,7 @@ class Mouse:
                 ks.left_click.refresh()
 
     def append_point_planar(self, planar_offset):
-        Point(self.screen, self.x, self.y, inches_to_pixels(v.origin_x + planar_offset), self.screen.points)
+        Point(self.screen, self.x, self.y, self.screen.inches_to_pixels(self.screen.origin_x + planar_offset), self.screen.points)
 
     def fix_point_xy(self):
         self.holding_point = True
@@ -82,7 +79,8 @@ class Mouse:
         self.screen.point_index = self.previous_point_index
         self.xy = True
 
-    def function(self, input_set, planar_offset):
+    def function(self, input_array, input_set, planar_offset):
+        self.update(input_array)
         self.check_buttons(input_set)
         # First, check if any buttons are being clicked
         if ks.left_click.clicked(input_set) and not self.onButton:
@@ -119,11 +117,11 @@ class Mouse:
         if self.holding_point:
             if not self.screen.xy:
                 self.point.z = self.x
-                self.point.z_inches = pixels_to_inches(self.point.z) - v.origin_x
+                self.point.z_inches = self.screen.pixels_to_inches(self.point.z) - self.screen.origin_x
                 self.screen.point_index = self.screen.points.index(self.point)
                 self.render()
             else:
                 self.point.x = self.x
-                self.point.x_inches = pixels_to_inches(self.point.x) - v.origin_x
+                self.point.x_inches = self.screen.pixels_to_inches(self.point.x) - self.screen.origin_x
                 self.screen.point_index = self.screen.points.index(self.point)
                 self.render()
