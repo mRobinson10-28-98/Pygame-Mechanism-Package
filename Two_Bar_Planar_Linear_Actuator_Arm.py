@@ -129,9 +129,9 @@ class Arm:
             py.draw.circle(self.screen.window, v.purple, (int(self.screen.inches_to_pixels(self.actuator2_ground[0])), int(
                 self.screen.inches_to_pixels(self.actuator2_ground[1]))), 10)
             py.draw.circle(self.screen.window, v.red, (int(self.screen.inches_to_pixels(self.origin_x)), int(
-                self.screen.inches_to_pixels(self.origin_y))), self.screen.inches_to_pixels(self.max_range), 2)
+                self.screen.inches_to_pixels(self.origin_y))), int(self.screen.inches_to_pixels(self.max_range)), 2)
             py.draw.circle(self.screen.window, v.red, (int(self.screen.inches_to_pixels(self.origin_x)), int(
-                self.screen.inches_to_pixels(self.origin_y))), self.screen.inches_to_pixels(self.min_range), 2)
+                self.screen.inches_to_pixels(self.origin_y))), int(self.screen.inches_to_pixels(self.min_range)), 2)
 
     def print_system(self):
         print('- - - - - - - - ')

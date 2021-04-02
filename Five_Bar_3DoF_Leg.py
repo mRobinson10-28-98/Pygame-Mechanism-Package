@@ -144,9 +144,9 @@ class Leg:
             py.draw.circle(self.screen.window, v.purple, (int(self.screen.inches_to_pixels(self.origin_x)), int(
                 self.screen.inches_to_pixels(self.origin_y))), 10)
             py.draw.circle(self.screen.window, v.red, (int(self.screen.inches_to_pixels(self.origin_x)), int(
-                self.screen.inches_to_pixels(self.origin_y))), self.screen.inches_to_pixels(self.max_range), 2)
+                self.screen.inches_to_pixels(self.origin_y))), int(self.screen.inches_to_pixels(self.max_range)), 2)
             py.draw.circle(self.screen.window, v.red, (int(self.screen.inches_to_pixels(self.origin_x)), int(
-                self.screen.inches_to_pixels(self.origin_y))), self.screen.inches_to_pixels(self.min_range), 2)
+                self.screen.inches_to_pixels(self.origin_y))), int(self.screen.inches_to_pixels(self.min_range)), 2)
         else:
             py.draw.circle(self.screen.window, v.black, (int(self.screen.inches_to_pixels(self.jointhip[0])), int(
                 self.screen.inches_to_pixels(self.jointhip[1]))), 8)
@@ -167,31 +167,29 @@ class Leg:
 
 
     def return_for_csv(self):
-        t1Csv = self.theta1
-        t2Csv = self.theta2 - self.theta1
-        if t2Csv <= 0:
-            t2Csv += 2 * m.pi
-        thCsv = self.thetahip
+        t1Csv = m.degrees(self.theta1)
+        t2Csv = m.degrees(self.theta2 - self.theta1)
+        thCsv = m.degrees(self.thetahip) +1
 
         if t1Csv <= 0:
-            t1Csv = (t1Csv + (2 * m.pi))
+            t1Csv += 360
         elif t1Csv >= 360:
-            t1Csv = (t1Csv - 2 * m.pi)
+            t1Csv -= 360
 
         if t2Csv <= 0:
-            t2Csv = (t2Csv + (2 * m.pi))
+            t2Csv += 360
         elif t2Csv >= 360:
-            t2Csv = (t2Csv - 2 * m.pi)
+            t2Csv -= 360
 
-        if thCsv <= 0:
-            thCsv = (thCsv + (2 * m.pi))
-        elif thCsv >= 360:
-            thCsv = (thCsv - 2 * m.pi)
+        if thCsv <= -180:
+            thCsv += 360
+        elif thCsv >= 180:
+            thCsv -= 360
 
         return [str(int(self.screen.inches_to_pixels(self.x + self.origin_x))),
                                str(int(self.screen.inches_to_pixels(self.y + self.origin_y))),
                                str(int(self.screen.inches_to_pixels(self.z + self.origin_x))),
-                str(int(m.degrees(t1Csv))), str(int(m.degrees(t2Csv))), str(int(m.degrees(thCsv)))]
+                str(int(t1Csv)), str(int(t2Csv)), str(int(thCsv))]
 
     def check_key_commands(self, input_array):
         # If "p" is clicked, print theta values
