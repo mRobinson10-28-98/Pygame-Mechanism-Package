@@ -4,8 +4,8 @@ import Keys as ks
 
 class CsvWriter:
     def __init__(self, screen, filename, object):
-        self.filename = filename
         self.screen = screen
+        self.filename = filename
         self.object = object
         self.csvList = []
         self.screen.key_commanders.append(self)

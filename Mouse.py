@@ -6,9 +6,9 @@ from Point import Point
 
 
 class Mouse:
-    def __init__(self, screen, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, screen):
+        self.x = 0
+        self.y = 0
         self.screen = screen
 
         self.holding_point = False
@@ -79,7 +79,7 @@ class Mouse:
         self.screen.point_index = self.previous_point_index
         self.xy = True
 
-    def function(self, input_array, input_set, planar_offset):
+    def function(self, input_array, input_set, planar_offset = 0):
         self.update(input_array)
         self.check_buttons(input_set)
         # First, check if any buttons are being clicked
